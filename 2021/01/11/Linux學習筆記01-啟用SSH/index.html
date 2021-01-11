@@ -5,22 +5,22 @@
   
 
   
-  <title>萬事先起頭 | OntheBridge</title>
+  <title>Linux學習筆記01:WSL啟用SSH終端機連線 | OntheBridge</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="在寫python的時候，常常會煩惱要怎麼寫才能達到自己要的結果。開著Jupyter Notebook半天一個字都沒有打。經歷過整個架構打掉重練、註解掉一塊又一塊的程式碼，我得到了一個結論： 先寫，再改。">
+  <meta name="description" content="接觸了各種資料，開發的平台&#x2F;機器不是用Unix基底的Mac，就是Linux家族的CentOS或Ubuntu。國中時期為了玩遊戲在DOS系統下學了不少指令，命令列介面對我而言有種莫名的親切感，總覺得學會了有天會用得上，就當作充實自己的實力吧！ 這個時代遠端桌面操作跟喝水一樣簡單，Linux應該也是吧？一邊這麼想著一邊研究著怎麼遠端連線到Linux，我才知道我太天真了…">
 <meta property="og:type" content="article">
-<meta property="og:title" content="萬事先起頭">
-<meta property="og:url" content="https://eec22.github.io/2020/09/14/initialpage/">
+<meta property="og:title" content="Linux學習筆記01:WSL啟用SSH終端機連線">
+<meta property="og:url" content="https://eec22.github.io/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/">
 <meta property="og:site_name" content="OntheBridge">
-<meta property="og:description" content="在寫python的時候，常常會煩惱要怎麼寫才能達到自己要的結果。開著Jupyter Notebook半天一個字都沒有打。經歷過整個架構打掉重練、註解掉一塊又一塊的程式碼，我得到了一個結論： 先寫，再改。">
+<meta property="og:description" content="接觸了各種資料，開發的平台&#x2F;機器不是用Unix基底的Mac，就是Linux家族的CentOS或Ubuntu。國中時期為了玩遊戲在DOS系統下學了不少指令，命令列介面對我而言有種莫名的親切感，總覺得學會了有天會用得上，就當作充實自己的實力吧！ 這個時代遠端桌面操作跟喝水一樣簡單，Linux應該也是吧？一邊這麼想著一邊研究著怎麼遠端連線到Linux，我才知道我太天真了…">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-09-14T06:23:00.000Z">
-<meta property="article:modified_time" content="2020-09-14T08:21:07.703Z">
+<meta property="article:published_time" content="2021-01-11T01:37:00.000Z">
+<meta property="article:modified_time" content="2021-01-11T06:43:32.801Z">
 <meta property="article:author" content="Kyle">
-<meta property="article:tag" content="code">
-<meta property="article:tag" content="python">
-<meta property="article:tag" content="github">
-<meta property="article:tag" content="page">
+<meta property="article:tag" content="WSL">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="ssh">
+<meta property="article:tag" content="shell">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="OntheBridge" type="application/atom+xml">
@@ -70,14 +70,14 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-initialpage" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-Linux學習筆記01-啟用SSH" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/09/14/initialpage/" class="article-date">
-  <time datetime="2020-09-14T06:23:00.000Z" itemprop="datePublished">2020-09-14</time>
+    <a href="/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/" class="article-date">
+  <time datetime="2021-01-11T01:37:00.000Z" itemprop="datePublished">2021-01-11</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/Initial/">Initial</a>
+    <a class="article-category-link" href="/categories/infrastructure/">infrastructure</a>
   </div>
 
   </div>
@@ -88,7 +88,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      萬事先起頭
+      Linux學習筆記01:WSL啟用SSH終端機連線
     </h1>
   
 
@@ -96,23 +96,56 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在寫python的時候，常常會煩惱要怎麼寫才能達到自己要的結果。開著Jupyter Notebook半天一個字都沒有打。經歷過整個架構打掉重練、註解掉一塊又一塊的程式碼，我得到了一個結論：</p>
-<p>先寫，再改。</p>
+        <p>接觸了各種資料，開發的平台/機器不是用Unix基底的Mac，就是Linux家族的CentOS或Ubuntu。國中時期為了玩遊戲在DOS系統下學了不少指令，命令列介面對我而言有種莫名的親切感，總覺得學會了有天會用得上，就當作充實自己的實力吧！</p>
+<p>這個時代遠端桌面操作跟喝水一樣簡單，Linux應該也是吧？一邊這麼想著一邊研究著怎麼遠端連線到Linux，我才知道我太天真了…</p>
 <a id="more"></a>
-
-<p>在腦中刻劃的Feature組合不起來，那就先寫基本的部分，然後再修改。</p>
-<p>第一步踏下去了，第二步就簡單多了。</p>
-<p>一直希望可以架設一個技術的部落格，一方面想將所學實現，一方面想做出成品供展示用。但Django看來看去還是要付費空間，pythonanywhere的網址也不漂亮；colab跑測試跟寫筆記註解很好用，不過並不是一個理想的演示網站…</p>
-<p>在發現很多簡潔的技術blog都是用GithubPage架設的之後，這個第一步就踏下去了。<br>1.免費架設在github<br>2.可以設domain<br>3.搭配hexo框架，簡潔清爽</p>
-<p>堅持了很久，現在就先安定下來吧。</p>
+<p>據資料了解，Linux可透過終端機連線，為了開啟SSH(Secure Shell)，一連串的問題就這樣開始了。</p>
+<p>系統：Windows子系統WSL的Ubuntu-18.04</p>
+<p>寫在前面：</p>
+<pre><code>ssh -v localhost</code></pre>
+<p>參數加上-v可以看詳細資訊</p>
+<p>折騰半天，總結是兩個問題：</p>
+<pre><code>1.ssh有沒有啟用
+2.公鑰跟私鑰有沒有產生</code></pre>
+<p>1.ssh有沒有啟用<br>對，就是這麼簡單。</p>
+<p>保險起見可以用下面指令檢查有沒有安裝：</p>
+<pre><code>which ssh (用戶端)
+which sshd(伺服端)</code></pre>
+<p>因為用的是WSL的Ubuntu練習，啟用指令為:</p>
+<pre><code>service ssh start</code></pre>
+<p>檢查狀態為:</p>
+<pre><code>service ssh status</code></pre>
+<p>如果出現sshd is not running，就重新跑上面指令啟動。</p>
+<p>Bonus:啟動時的錯誤訊息</p>
+<pre><code>/etc/ssh/sshd_config line 56: Bad yes/no argument: Yes</code></pre>
+<p>表示sshd_config這個檔案的設定有錯，yes/no的參數全部要「小寫」!<br>當初修改設定時沒注意這點，很習慣的把Yes首字母大寫…</p>
+<p>2.公鑰跟私鑰有沒有產生<br>啟動ssh的時候出現訊息：</p>
+<pre><code>  Could not load host key: /etc/ssh/ssh_host_rsa_key
+  Could not load host key: /etc/ssh/ssh_host_ecdsa_key
+  Could not load host key: /etc/ssh/ssh_host_ed25519_key</code></pre>
+<p>表示金鑰有問題，檢查一下</p>
+<pre><code>~# ll /etc/ssh</code></pre>
+<p>確認下面幾個檔案有沒有存在<br>ssh_host_ecdsa_key<br>ssh_host_ecdsa_key.pub<br>ssh_host_ed25519_key<br>ssh_host_ed25519_key.pub<br>ssh_host_rsa_key<br>ssh_host_rsa_key.pub</p>
+<p>檔案不存在的話用下列指令產生</p>
+<pre><code>ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
+ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key</code></pre>
+<p>之後應該就可以正常連線了。</p>
+<p>用錯誤訊息去google到的答案並不一定有效，以下景列出client端連線時遇到的錯誤訊息做為參考</p>
+<pre><code>錯誤訊息一(非代號)
+Connection closed by 127.0.0.1 port 22
+錯誤訊息二
+ssh: connect to host localhost port 22: Connection refused
+錯誤訊息三
+kex_exchange_identification: read: Connection reset by peer</code></pre>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://eec22.github.io/2020/09/14/initialpage/" data-id="ckjs9v14q0006wsgu2kzef2ct" class="article-share-link">Share</a>
+      <a data-url="https://eec22.github.io/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/" data-id="ckjs9v14k0003wsgud5ai455b" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/code/" rel="tag">code</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/page/" rel="tag">page</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WSL/" rel="tag">WSL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shell/" rel="tag">shell</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssh/" rel="tag">ssh</a></li></ul>
 
     </footer>
   </div>
@@ -120,15 +153,11 @@
     
 <nav id="article-nav">
   
-    <a href="/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          Linux學習筆記01:WSL啟用SSH終端機連線
-        
-      </div>
-    </a>
   
+    <a href="/2020/09/14/initialpage/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">萬事先起頭</div>
+    </a>
   
 </nav>
 
