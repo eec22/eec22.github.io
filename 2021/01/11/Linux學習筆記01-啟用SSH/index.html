@@ -5,17 +5,17 @@
   
 
   
-  <title>Linux學習筆記01:WSL啟用SSH終端機連線 | OntheBridge</title>
+  <title>Linux實作筆記01:WSL啟用SSH終端機連線 | OntheBridge</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="接觸了各種資料，開發的平台&#x2F;機器不是用Unix基底的Mac，就是Linux家族的CentOS或Ubuntu。國中時期為了玩遊戲在DOS系統下學了不少指令，命令列介面對我而言有種莫名的親切感，總覺得學會了有天會用得上，就當作充實自己的實力吧！ 這個時代遠端桌面操作跟喝水一樣簡單，Linux應該也是吧？一邊這麼想著一邊研究著怎麼遠端連線到Linux，我才知道我太天真了…">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Linux學習筆記01:WSL啟用SSH終端機連線">
+<meta property="og:title" content="Linux實作筆記01:WSL啟用SSH終端機連線">
 <meta property="og:url" content="https://eec22.github.io/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/">
 <meta property="og:site_name" content="OntheBridge">
 <meta property="og:description" content="接觸了各種資料，開發的平台&#x2F;機器不是用Unix基底的Mac，就是Linux家族的CentOS或Ubuntu。國中時期為了玩遊戲在DOS系統下學了不少指令，命令列介面對我而言有種莫名的親切感，總覺得學會了有天會用得上，就當作充實自己的實力吧！ 這個時代遠端桌面操作跟喝水一樣簡單，Linux應該也是吧？一邊這麼想著一邊研究著怎麼遠端連線到Linux，我才知道我太天真了…">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-01-11T01:37:00.000Z">
-<meta property="article:modified_time" content="2021-01-11T06:43:32.801Z">
+<meta property="article:modified_time" content="2021-01-12T03:28:18.728Z">
 <meta property="article:author" content="Kyle">
 <meta property="article:tag" content="WSL">
 <meta property="article:tag" content="linux">
@@ -88,7 +88,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Linux學習筆記01:WSL啟用SSH終端機連線
+      Linux實作筆記01:WSL啟用SSH終端機連線
     </h1>
   
 
@@ -101,48 +101,56 @@
 <a id="more"></a>
 <p>據資料了解，Linux可透過終端機連線，為了開啟SSH(Secure Shell)，一連串的問題就這樣開始了。</p>
 <p>系統：Windows子系統WSL的Ubuntu-18.04</p>
-<p>寫在前面：</p>
-<pre><code>ssh -v localhost</code></pre>
-<p>參數加上-v可以看詳細資訊</p>
-<p>折騰半天，總結是兩個問題：</p>
-<pre><code>1.ssh有沒有啟用
-2.公鑰跟私鑰有沒有產生</code></pre>
-<p>1.ssh有沒有啟用<br>對，就是這麼簡單。</p>
-<p>保險起見可以用下面指令檢查有沒有安裝：</p>
-<pre><code>which ssh (用戶端)
-which sshd(伺服端)</code></pre>
-<p>因為用的是WSL的Ubuntu練習，啟用指令為:</p>
-<pre><code>service ssh start</code></pre>
-<p>檢查狀態為:</p>
-<pre><code>service ssh status</code></pre>
-<p>如果出現sshd is not running，就重新跑上面指令啟動。</p>
-<p>Bonus:啟動時的錯誤訊息</p>
-<pre><code>/etc/ssh/sshd_config line 56: Bad yes/no argument: Yes</code></pre>
-<p>表示sshd_config這個檔案的設定有錯，yes/no的參數全部要「小寫」!<br>當初修改設定時沒注意這點，很習慣的把Yes首字母大寫…</p>
-<p>2.公鑰跟私鑰有沒有產生<br>啟動ssh的時候出現訊息：</p>
-<pre><code>  Could not load host key: /etc/ssh/ssh_host_rsa_key
-  Could not load host key: /etc/ssh/ssh_host_ecdsa_key
-  Could not load host key: /etc/ssh/ssh_host_ed25519_key</code></pre>
-<p>表示金鑰有問題，檢查一下</p>
-<pre><code>~# ll /etc/ssh</code></pre>
-<p>確認下面幾個檔案有沒有存在<br>ssh_host_ecdsa_key<br>ssh_host_ecdsa_key.pub<br>ssh_host_ed25519_key<br>ssh_host_ed25519_key.pub<br>ssh_host_rsa_key<br>ssh_host_rsa_key.pub</p>
-<p>檔案不存在的話用下列指令產生</p>
-<pre><code>ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
-ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
-ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key</code></pre>
-<p>之後應該就可以正常連線了。</p>
-<p>用錯誤訊息去google到的答案並不一定有效，以下景列出client端連線時遇到的錯誤訊息做為參考</p>
-<pre><code>錯誤訊息一(非代號)
-Connection closed by 127.0.0.1 port 22
-錯誤訊息二
-ssh: connect to host localhost port 22: Connection refused
-錯誤訊息三
-kex_exchange_identification: read: Connection reset by peer</code></pre>
+<p><strong>連線除錯方式：</strong></p>
+<p>參數加上<code>-v</code>可以看詳細資訊</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -v localhost</span><br></pre></td></tr></table></figure>
 
+<p>折騰半天，總結是兩個問題：</p>
+<ol>
+<li>ssh有沒有啟用</li>
+<li>公鑰跟私鑰有沒有產生</li>
+</ol>
+<h3>1.ssh有沒有啟用</h3>
+
+<p><del>對，就是這麼簡單。</del></p>
+<p>如果想確認ssh有沒有安裝，可以用下面指令確認：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">which ssh (用戶端)</span><br><span class="line">which sshd(伺服端)</span><br></pre></td></tr></table></figure>
+
+<p>因為用的是WSL的Ubuntu練習(linux好像不一樣)，啟用指令為:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service ssh start</span><br></pre></td></tr></table></figure>
+
+<p>檢查狀態的指令為:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service ssh status</span><br></pre></td></tr></table></figure>
+
+<p>如果出現<code>sshd is not running</code>，就重新跑上面指令啟動。</p>
+<hr>
+<h3>1.1.啟動時的錯誤訊息</h3>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/ssh/sshd_config line <span class="number">56</span>: Bad yes/no argument: Yes</span><br></pre></td></tr></table></figure>
+
+<p>表示<strong>sshd_config</strong>這個檔案的設定有錯，yes/no的參數全部要 <strong>小寫</strong><br>當初修改設定時沒注意這點，很習慣的把Yes首字母大寫…</p>
+<hr>
+<h3>2.公鑰跟私鑰有沒有產生</h3>
+
+<p>啟動ssh的時候出現訊息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Could not load host key: /etc/ssh/ssh_host_rsa_key</span><br><span class="line">Could not load host key: /etc/ssh/ssh_host_ecdsa_key</span><br><span class="line">Could not load host key: /etc/ssh/ssh_host_ed25519_key</span><br></pre></td></tr></table></figure>
+
+<p>表示金鑰有問題，檢查一下</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ll /etc/ssh</span><br></pre></td></tr></table></figure>
+
+<p>確認下面幾個檔案有沒有存在</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ssh_host_ecdsa_key</span><br><span class="line">ssh_host_ecdsa_key.pub</span><br><span class="line">ssh_host_ed25519_key</span><br><span class="line">ssh_host_ed25519_key.pub</span><br><span class="line">ssh_host_rsa_key</span><br><span class="line">ssh_host_rsa_key.pub</span><br></pre></td></tr></table></figure>
+
+<p>檔案不存在的話用下列指令產生</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key</span><br><span class="line">ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key</span><br><span class="line">ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key</span><br></pre></td></tr></table></figure>
+<p>之後應該就可以正常連線了。</p>
+<hr>
+<p>用錯誤訊息去google到的答案並不一定有效，以下僅列出client端連線時遇到的錯誤訊息做為參考</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Connection closed by 127.0.0.1 port 22</span><br><span class="line">ssh: connect to host localhost port 22: Connection refused</span><br><span class="line">kex_exchange_identification: read: Connection reset by peer</span><br></pre></td></tr></table></figure>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://eec22.github.io/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/" data-id="ckjs9v14k0003wsgud5ai455b" class="article-share-link">Share</a>
+      <a data-url="https://eec22.github.io/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/" data-id="ckjtfzld0000rhsgu7jhg5sbl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WSL/" rel="tag">WSL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shell/" rel="tag">shell</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssh/" rel="tag">ssh</a></li></ul>
@@ -214,7 +222,7 @@ kex_exchange_identification: read: Connection reset by peer</code></pre>
       <ul>
         
           <li>
-            <a href="/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/">Linux學習筆記01:WSL啟用SSH終端機連線</a>
+            <a href="/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/">Linux實作筆記01:WSL啟用SSH終端機連線</a>
           </li>
         
           <li>
