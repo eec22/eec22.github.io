@@ -5,14 +5,22 @@
   
 
   
-  <title>Category: Initial | OntheBridge</title>
+  <title>AD管理:密碼原則的例外性 | OntheBridge</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="OntheBridge">
-<meta property="og:url" content="https://eec22.github.io/categories/Initial/">
+  <meta name="description" content="原則結果組顯示用戶端有吃到OU的政策，但是怎麼樣測試都還是可以不遵守密碼複雜性原則，爬了資料才發現密碼政策有那麼一點小例外。  優先順序 複雜性原則的設定">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AD管理:密碼原則的例外性">
+<meta property="og:url" content="https://eec22.github.io/2021/01/13/AD%E7%AE%A1%E7%90%86/">
 <meta property="og:site_name" content="OntheBridge">
+<meta property="og:description" content="原則結果組顯示用戶端有吃到OU的政策，但是怎麼樣測試都還是可以不遵守密碼複雜性原則，爬了資料才發現密碼政策有那麼一點小例外。  優先順序 複雜性原則的設定">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-13T07:11:00.000Z">
+<meta property="article:modified_time" content="2021-01-14T01:06:22.487Z">
 <meta property="article:author" content="Kyle">
+<meta property="article:tag" content="AD">
+<meta property="article:tag" content="ActiveDirectory">
+<meta property="article:tag" content="password">
+<meta property="article:tag" content="mcsa">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="OntheBridge" type="application/atom+xml">
@@ -62,40 +70,90 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/09/14/initialpage/" class="archive-article-date">
-  <time datetime="2020-09-14T06:23:00.000Z" itemprop="datePublished">Sep 14</time>
+        <section id="main"><article id="post-AD管理" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/01/13/AD%E7%AE%A1%E7%90%86/" class="article-date">
+  <time datetime="2021-01-13T07:11:00.000Z" itemprop="datePublished">2021-01-13</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/InformationManagement/">InformationManagement</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/09/14/initialpage/">萬事先起頭</a>
+    <h1 class="article-title" itemprop="name">
+      AD管理:密碼原則的例外性
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原則結果組顯示用戶端有吃到OU的政策，但是怎麼樣測試都還是可以不遵守密碼複雜性原則，爬了資料才發現密碼政策有那麼一點小例外。</p>
+<ol>
+<li>優先順序</li>
+<li>複雜性原則的設定</li>
+</ol>
+<a id="more"></a>
+<H3>優先順序</H3>
 
+<p>原本的理解是：<br><em>網域原則</em>優先於本機原則</p>
+<p>一般來說，OU的Policy <em>優先</em> 於Default Policy，但是因為套用的方式不一樣，密碼原則要設定在<strong>Domain root</strong>：</p>
+<ul>
+<li>Domain root的Policy會套用到真的Domain Account</li>
+<li>OU的Policy會套用到Domain Account_暫存在Local Computer的Cache_</li>
+</ul>
+<h4>結論：</h4>
+
+<ol>
+<li>要在自建GPO中設定密碼原則，Default Domain Policy要清空(未定義)</li>
+<li>Domain root的Default Domain Policy <strong>可能</strong> 會被OU的GPO蓋過</li>
+<li><code>gpupdate /force</code>要執行到不再出現<strong>需要登出或重開機</strong></li>
+</ol>
+<H3>複雜性原則的設定</H3>
+
+<p>「定義這個原則」有三種選項：</p>
+<ol>
+<li>未定義：密碼可以複雜，也可以不複雜</li>
+<li>已啟用：密碼<strong>必須</strong>符合複雜化</li>
+<li>已停用：密碼<strong>不可以</strong>使用複雜化</li>
+</ol>
+<p>如果設定為<strong>已停用</strong>，那密碼還得 <em>不複雜</em> 才行…。.</p>
+<p>參考資料：</p>
+<p><a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/questions/10061146">ithome:”密碼必須符合複雜性需求=停用” 仍然”未達最低複雜度要求”而無法變更密碼?</a></p>
+<p><a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/questions/10092757">ithome:AD更改密碼複雜度卻一直都不過關</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://eec22.github.io/2021/01/13/AD%E7%AE%A1%E7%90%86/" data-id="ckjw5rqrl000c1gjx4jcm0362" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AD/" rel="tag">AD</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ActiveDirectory/" rel="tag">ActiveDirectory</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mcsa/" rel="tag">mcsa</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/password/" rel="tag">password</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Linux實作筆記01:WSL啟用SSH終端機連線</div>
+    </a>
+  
+</nav>
+
+  
+</article>
 
 </section>
         
