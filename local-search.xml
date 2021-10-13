@@ -101,7 +101,7 @@
     <link href="/2020/09/14/initialpage/"/>
     <url>/2020/09/14/initialpage/</url>
     
-    <content type="html"><![CDATA[<p><img src="%5Cimages%5Cpasted-2.png%5C" alt="Pexel"></p><p>在寫python的時候，常常會煩惱要怎麼寫才能達到自己要的結果。開著Jupyter Notebook半天一個字都沒有打。經歷過整個架構打掉重練、註解掉一塊又一塊的程式碼，我得到了一個結論：</p><p>先寫，再改。</p><a id="more"></a><p>在腦中刻劃的Feature組合不起來，那就先寫基本的部分，然後再修改。</p><p>第一步踏下去了，第二步就簡單多了。</p><p>一直希望可以架設一個技術的部落格，一方面想將所學實現，一方面想做出成品供展示用。但Django看來看去還是要付費空間，pythonanywhere的網址也不漂亮；colab跑測試跟寫筆記註解很好用，不過並不是一個理想的演示網站…</p><p>在發現很多簡潔的技術blog都是用GithubPage架設的之後，這個第一步就踏下去了。<br>1.免費架設在github<br>2.可以設domain<br>3.搭配hexo框架，簡潔清爽</p><p>堅持了很久，現在就先安定下來吧。</p>]]></content>
+    <content type="html"><![CDATA[<p>在寫python的時候，常常會煩惱要怎麼寫才能達到自己要的結果。開著Jupyter Notebook半天一個字都沒有打。經歷過整個架構打掉重練、註解掉一塊又一塊的程式碼，我得到了一個結論：</p><p>先寫，再改。</p><a id="more"></a><p>在腦中刻劃的Feature組合不起來，那就先寫基本的部分，然後再修改。</p><p>第一步踏下去了，第二步就簡單多了。</p><p>一直希望可以架設一個技術的部落格，一方面想將所學實現，一方面想做出成品供展示用。但Django看來看去還是要付費空間，pythonanywhere的網址也不漂亮；colab跑測試跟寫筆記註解很好用，不過並不是一個理想的演示網站…</p><p>在發現很多簡潔的技術blog都是用GithubPage架設的之後，這個第一步就踏下去了。<br>1.免費架設在github<br>2.可以設domain<br>3.搭配hexo框架，簡潔清爽</p><p>堅持了很久，現在就先安定下來吧。</p>]]></content>
     
     
     <categories>
