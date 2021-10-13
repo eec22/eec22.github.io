@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>某些規則已停用，當您嘗試在 Outlook 中建立或啟用規則時，會收到錯誤訊息</title>
+    <link href="/2021/09/15/%E6%9F%90%E4%BA%9B%E8%A6%8F%E5%89%87%E5%B7%B2%E5%81%9C%E7%94%A8%EF%BC%8C%E7%95%B6%E6%82%A8%E5%98%97%E8%A9%A6%E5%9C%A8-Outlook-%E4%B8%AD%E5%BB%BA%E7%AB%8B%E6%88%96%E5%95%9F%E7%94%A8%E8%A6%8F%E5%89%87%E6%99%82%EF%BC%8C%E6%9C%83%E6%94%B6%E5%88%B0%E9%8C%AF%E8%AA%A4%E8%A8%8A%E6%81%AF/"/>
+    <url>/2021/09/15/%E6%9F%90%E4%BA%9B%E8%A6%8F%E5%89%87%E5%B7%B2%E5%81%9C%E7%94%A8%EF%BC%8C%E7%95%B6%E6%82%A8%E5%98%97%E8%A9%A6%E5%9C%A8-Outlook-%E4%B8%AD%E5%BB%BA%E7%AB%8B%E6%88%96%E5%95%9F%E7%94%A8%E8%A6%8F%E5%89%87%E6%99%82%EF%BC%8C%E6%9C%83%E6%94%B6%E5%88%B0%E9%8C%AF%E8%AA%A4%E8%A8%8A%E6%81%AF/</url>
+    
+    <content type="html"><![CDATA[<p>案例配置：</p><ul><li>用戶端：Outlook 2013</li><li>伺服器：Exchange 2010</li></ul><p>(視版本不同徵狀與原因可能有些微差異)</p><a id="more"></a><h2>徵狀：</h2><p>使用者帳戶從POP3切換成Exchange類型，規則出現異常的情況。</p><ul><li>在outlook端新增或設定完規則，點擊<strong>套用</strong>時出現錯誤訊息：</li></ul><pre><code>「無法將一或多個規則上傳至 Exchange 伺服器，已停用。這可能是因為部分參數不受支援，或沒有足夠的空間可儲存所有的規則。」</code></pre><p>上述為微軟官方對於徵狀的主要描述。除此之外，本次案例還有下列現象：</p><ul><li>已勾選的規則未執行</li><li>已勾選的規則被取消勾選</li><li>未勾選的規則消失不見</li></ul><hr><h2>原因：</h2><p>「都是同步的問題。」</p><p>在舊有的資料需要留存、繼續使用原本帳戶的pst檔的情況下，對Exchange類型的帳戶而言，伺服器端如果要執行規則(如使用OWA介面收發郵件的時候)，會無法辨識存在於pst檔的資料夾(因為資料夾在用戶端電腦上，不存在於伺服器上)。</p><p>因此在OWA網頁介面編輯規則時，若規則涉及pst檔的資料夾，會無法顯示規則內容，並顯示：</p><pre><code>「您選取的規則目前無法在 Outlook Web App 中檢視。請使用 Outlook 檢視。」。</code></pre><p>取消勾選也會跳出對話方塊：</p><pre><code>「此版本 Exchange 不支援此 [收件匣] 規則。」</code></pre><p>除了同步的問題之外，就是Exchange從2007開始，郵件規則的容量預設上限為64kb(在此之前視32kb)。但POP3類型的郵件規則<strong>沒有這樣的限制</strong>，如果轉換前的規則就多到超過64kb(以案例outlook 2013來說大約80個規則，不過視情況可能更少)，轉換成Exchange帳戶後受限於規則的預設容量，自然會發生錯誤。</p><p>透過OWA網頁端觀察比對離線郵件規則與伺服器同步後的結果，判斷原因如下：</p><p><strong>已勾選的規則被取消勾選：</strong></p><p>容量不足，超過容量的規則會被取消勾選，排序越下面越舊的會先被取消。</p><p><strong>未勾選的規則消失不見：</strong></p><p>規則衝突的衍生問題。在上述現象發生之後，Exchange類型帳戶在outlook管理規則時，出現規則精靈表示出現規則衝突，對話方框可選要保留離線的用戶端版本，還是伺服器端的版本。若這時候選擇了<strong>伺服器版本</strong>的規則，那未勾選的規則會<strong>「全部消失不見」</strong>。</p><p><strong>已勾選的規則未執行：</strong></p><p>最後這個應該是bug。假設規則容量已超過上限，或是規則容量被減少，但已建立的規則在<strong>OWA介面會被取消勾選</strong>，而離線端(outlook)<strong>仍然會保持勾選。</strong></p><hr><h2>解決方式：</h2><p>提高規則的容量上限是最直接的方式，可配置的最大容量為256kb，需透過powershell執行指令：</p><p><strong>查詢規則容量</strong></p><pre><code>get-mailbox -identity &lt;目標mail帳號&gt; |select  name,rulesquota </code></pre><p><strong>個別變更規則容量</strong></p><pre><code>set-mailbox &lt;目標mail帳號&gt; -rulesquota 262144</code></pre><p><strong>全部變更規則容量</strong></p><pre><code>get-mailbox|set-mailbox -rulesquota 262144</code></pre>]]></content>
+    
+    
+    <categories>
+      
+      <category>Server</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>exchange</tag>
+      
+      <tag>mail</tag>
+      
+      <tag>rule</tag>
+      
+      <tag>outlook</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>AD管理:密碼原則的例外性</title>
+    <link href="/2021/01/13/AD%E7%AE%A1%E7%90%86/"/>
+    <url>/2021/01/13/AD%E7%AE%A1%E7%90%86/</url>
+    
+    <content type="html"><![CDATA[<p>原則結果組顯示用戶端有吃到OU的政策，但是怎麼樣測試都還是可以不遵守密碼複雜性原則，爬了資料才發現密碼政策有那麼一點小例外。</p><ol><li>優先順序</li><li>複雜性原則的設定</li></ol><a id="more"></a><H3>優先順序</H3><p>原本的理解是：<br><em>網域原則</em>優先於本機原則</p><p>一般來說，OU的Policy <em>優先</em> 於Default Policy，但是因為套用的方式不一樣，密碼原則要設定在<strong>Domain root</strong>：</p><ul><li>Domain root的Policy會套用到真的Domain Account</li><li>OU的Policy會套用到Domain Account_暫存在Local Computer的Cache_</li></ul><h4>結論：</h4><ol><li>要在自建GPO中設定密碼原則，Default Domain Policy要清空(未定義)</li><li>Domain root的Default Domain Policy <strong>可能</strong> 會被OU的GPO蓋過</li><li><code>gpupdate /force</code>要執行到不再出現<strong>需要登出或重開機</strong></li></ol><H3>複雜性原則的設定</H3><p>「定義這個原則」有三種選項：</p><ol><li>未定義：密碼可以複雜，也可以不複雜</li><li>已啟用：密碼<strong>必須</strong>符合複雜化</li><li>已停用：密碼<strong>不可以</strong>使用複雜化</li></ol><p>如果設定為<strong>已停用</strong>，那密碼還得 <em>不複雜</em> 才行…。.</p><p>參考資料：</p><p><a href="https://ithelp.ithome.com.tw/questions/10061146">ithome:”密碼必須符合複雜性需求=停用” 仍然”未達最低複雜度要求”而無法變更密碼?</a></p><p><a href="https://ithelp.ithome.com.tw/questions/10092757">ithome:AD更改密碼複雜度卻一直都不過關</a></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>InformationManagement</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>AD</tag>
+      
+      <tag>ActiveDirectory</tag>
+      
+      <tag>password</tag>
+      
+      <tag>mcsa</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Linux實作筆記01:WSL啟用SSH終端機連線</title>
+    <link href="/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/"/>
+    <url>/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/</url>
+    
+    <content type="html"><![CDATA[<p>接觸了各種資料，開發的平台/機器不是用Unix基底的Mac，就是Linux家族的CentOS或Ubuntu。國中時期為了玩遊戲在DOS系統下學了不少指令，命令列介面對我而言有種莫名的親切感，總覺得學會了有天會用得上，就當作充實自己的實力吧！</p><p>這個時代遠端桌面操作跟喝水一樣簡單，Linux應該也是吧？一邊這麼想著一邊研究著怎麼遠端連線到Linux，我才知道我太天真了…</p><a id="more"></a><p>據資料了解，Linux可透過終端機連線，為了開啟SSH(Secure Shell)，一連串的問題就這樣開始了。</p><p>系統：Windows子系統WSL的Ubuntu-18.04</p><p><strong>連線除錯方式：</strong></p><p>參數加上<code>-v</code>可以看詳細資訊</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">ssh -v localhost<br></code></pre></td></tr></table></figure><p>折騰半天，總結是兩個問題：</p><ol><li>ssh有沒有啟用</li><li>公鑰跟私鑰有沒有產生</li></ol><h3>1.ssh有沒有啟用</h3><p><del>對，就是這麼簡單。</del></p><p>如果想確認ssh有沒有安裝，可以用下面指令確認：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">which ssh (用戶端)<br>which sshd(伺服端)<br></code></pre></td></tr></table></figure><p>因為用的是WSL的Ubuntu練習(linux好像不一樣)，啟用指令為:</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">service ssh start<br></code></pre></td></tr></table></figure><p>檢查狀態的指令為:</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">service ssh status<br></code></pre></td></tr></table></figure><p>如果出現<code>sshd is not running</code>，就重新跑上面指令啟動。</p><hr><h3>1.1.啟動時的錯誤訊息</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs powershell">/etc/ssh/sshd_config line <span class="hljs-number">56</span>: Bad yes/no argument: Yes<br></code></pre></td></tr></table></figure><p>表示<strong>sshd_config</strong>這個檔案的設定有錯，yes/no的參數全部要 <strong>小寫</strong><br>當初修改設定時沒注意這點，很習慣的把Yes首字母大寫…</p><hr><h3>2.公鑰跟私鑰有沒有產生</h3><p>啟動ssh的時候出現訊息：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">Could not load host key: /etc/ssh/ssh_host_rsa_key<br>Could not load host key: /etc/ssh/ssh_host_ecdsa_key<br>Could not load host key: /etc/ssh/ssh_host_ed25519_key<br></code></pre></td></tr></table></figure><p>表示金鑰有問題，檢查一下</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">ll /etc/ssh<br></code></pre></td></tr></table></figure><p>確認下面幾個檔案有沒有存在</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">ssh_host_ecdsa_key<br>ssh_host_ecdsa_key.pub<br>ssh_host_ed25519_key<br>ssh_host_ed25519_key.pub<br>ssh_host_rsa_key<br>ssh_host_rsa_key.pub<br></code></pre></td></tr></table></figure><p>檔案不存在的話用下列指令產生</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key<br>ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key<br>ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key<br></code></pre></td></tr></table></figure><p>之後應該就可以正常連線了。</p><hr><p>用錯誤訊息去google到的答案並不一定有效，以下僅列出client端連線時遇到的錯誤訊息做為參考</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">Connection closed by 127.0.0.1 port 22<br>ssh: connect to host localhost port 22: Connection refused<br>kex_exchange_identification: read: Connection reset by peer<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>infrastructure</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>linux</tag>
+      
+      <tag>ssh</tag>
+      
+      <tag>shell</tag>
+      
+      <tag>WSL</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>萬事先起頭</title>
+    <link href="/2020/09/14/initialpage/"/>
+    <url>/2020/09/14/initialpage/</url>
+    
+    <content type="html"><![CDATA[<p>在寫python的時候，常常會煩惱要怎麼寫才能達到自己要的結果。開著Jupyter Notebook半天一個字都沒有打。經歷過整個架構打掉重練、註解掉一塊又一塊的程式碼，我得到了一個結論：</p><p>先寫，再改。</p><a id="more"></a><p>在腦中刻劃的Feature組合不起來，那就先寫基本的部分，然後再修改。</p><p>第一步踏下去了，第二步就簡單多了。</p><p>一直希望可以架設一個技術的部落格，一方面想將所學實現，一方面想做出成品供展示用。但Django看來看去還是要付費空間，pythonanywhere的網址也不漂亮；colab跑測試跟寫筆記註解很好用，不過並不是一個理想的演示網站…</p><p>在發現很多簡潔的技術blog都是用GithubPage架設的之後，這個第一步就踏下去了。<br>1.免費架設在github<br>2.可以設domain<br>3.搭配hexo框架，簡潔清爽</p><p>堅持了很久，現在就先安定下來吧。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Initial</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>code</tag>
+      
+      <tag>python</tag>
+      
+      <tag>github</tag>
+      
+      <tag>page</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>

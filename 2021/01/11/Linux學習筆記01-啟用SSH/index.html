@@ -1,32 +1,29 @@
+
+
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW" data-default-color-scheme=auto>
+
+
+
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
   
-<!-- Google Analytics -->
-<script type="text/javascript">
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', '[object Object]', 'auto');
-ga('send', 'pageview');
-
-</script>
-<!-- End Google Analytics -->
-
-
-  
-  <title>Linux實作筆記01:WSL啟用SSH終端機連線 | OntheBridge</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="接觸了各種資料，開發的平台/機器不是用Unix基底的Mac，就是Linux家族的CentOS或Ubuntu。國中時期為了玩遊戲在DOS系統下學了不少指令，命令列介面對我而言有種莫名的親切感，總覺得學會了有天會用得上，就當作充實自己的實力吧！
+這個時代遠端桌面操作跟喝水一樣簡單，Linux應該也是吧？一邊這麼想著一邊研究著怎麼遠端連線到Linux，我才知道我太天真了…">
+  <meta name="author" content="Kyle">
+  <meta name="keywords" content="">
   <meta name="description" content="接觸了各種資料，開發的平台&#x2F;機器不是用Unix基底的Mac，就是Linux家族的CentOS或Ubuntu。國中時期為了玩遊戲在DOS系統下學了不少指令，命令列介面對我而言有種莫名的親切感，總覺得學會了有天會用得上，就當作充實自己的實力吧！ 這個時代遠端桌面操作跟喝水一樣簡單，Linux應該也是吧？一邊這麼想著一邊研究著怎麼遠端連線到Linux，我才知道我太天真了…">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux實作筆記01:WSL啟用SSH終端機連線">
 <meta property="og:url" content="https://eec22.github.io/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/">
 <meta property="og:site_name" content="OntheBridge">
 <meta property="og:description" content="接觸了各種資料，開發的平台&#x2F;機器不是用Unix基底的Mac，就是Linux家族的CentOS或Ubuntu。國中時期為了玩遊戲在DOS系統下學了不少指令，命令列介面對我而言有種莫名的親切感，總覺得學會了有天會用得上，就當作充實自己的實力吧！ 這個時代遠端桌面操作跟喝水一樣簡單，Linux應該也是吧？一邊這麼想著一邊研究著怎麼遠端連線到Linux，我才知道我太天真了…">
-<meta property="og:locale" content="en_US">
+<meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-01-11T01:37:00.000Z">
 <meta property="article:modified_time" content="2021-01-12T03:28:18.728Z">
 <meta property="article:author" content="Kyle">
@@ -34,89 +31,224 @@ ga('send', 'pageview');
 <meta property="article:tag" content="ssh">
 <meta property="article:tag" content="shell">
 <meta property="article:tag" content="WSL">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
   
-    <link rel="alternate" href="/atom.xml" title="OntheBridge" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  
-<link rel="stylesheet" href="/css/style.css">
+  <title>Linux實作筆記01:WSL啟用SSH終端機連線 - OntheBridge</title>
 
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"eec22.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <meta name="generator" content="Hexo 5.1.1"></head>
 
+
 <body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">OntheBridge</a>
-      </h1>
-      
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首頁
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                封存
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分類
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                標籤
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                關於
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://eec22.github.io"></form>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Linux實作筆記01:WSL啟用SSH終端機連線">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-01-11 09:37" pubdate>
+        2021年1月11日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.3k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      4 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
       </div>
     </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main"><article id="post-Linux學習筆記01-啟用SSH" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/" class="article-date">
-  <time datetime="2021-01-11T01:37:00.000Z" itemprop="datePublished">2021-01-11</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/infrastructure/">infrastructure</a>
-  </div>
+  </header>
 
-  </div>
-  <div class="article-inner">
+  <main>
     
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      Linux實作筆記01:WSL啟用SSH終端機連線
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
       
-        <p>接觸了各種資料，開發的平台/機器不是用Unix基底的Mac，就是Linux家族的CentOS或Ubuntu。國中時期為了玩遊戲在DOS系統下學了不少指令，命令列介面對我而言有種莫名的親切感，總覺得學會了有天會用得上，就當作充實自己的實力吧！</p>
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Linux實作筆記01:WSL啟用SSH終端機連線</h1>
+            
+            <div class="markdown-body">
+              <p>接觸了各種資料，開發的平台/機器不是用Unix基底的Mac，就是Linux家族的CentOS或Ubuntu。國中時期為了玩遊戲在DOS系統下學了不少指令，命令列介面對我而言有種莫名的親切感，總覺得學會了有天會用得上，就當作充實自己的實力吧！</p>
 <p>這個時代遠端桌面操作跟喝水一樣簡單，Linux應該也是吧？一邊這麼想著一邊研究著怎麼遠端連線到Linux，我才知道我太天真了…</p>
 <a id="more"></a>
 <p>據資料了解，Linux可透過終端機連線，為了開啟SSH(Secure Shell)，一連串的問題就這樣開始了。</p>
 <p>系統：Windows子系統WSL的Ubuntu-18.04</p>
 <p><strong>連線除錯方式：</strong></p>
 <p>參數加上<code>-v</code>可以看詳細資訊</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -v localhost</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">ssh -v localhost<br></code></pre></td></tr></table></figure>
 
 <p>折騰半天，總結是兩個問題：</p>
 <ol>
@@ -127,182 +259,248 @@ ga('send', 'pageview');
 
 <p><del>對，就是這麼簡單。</del></p>
 <p>如果想確認ssh有沒有安裝，可以用下面指令確認：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">which ssh (用戶端)</span><br><span class="line">which sshd(伺服端)</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">which ssh (用戶端)<br>which sshd(伺服端)<br></code></pre></td></tr></table></figure>
 
 <p>因為用的是WSL的Ubuntu練習(linux好像不一樣)，啟用指令為:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service ssh start</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">service ssh start<br></code></pre></td></tr></table></figure>
 
 <p>檢查狀態的指令為:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service ssh status</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">service ssh status<br></code></pre></td></tr></table></figure>
 
 <p>如果出現<code>sshd is not running</code>，就重新跑上面指令啟動。</p>
 <hr>
 <h3>1.1.啟動時的錯誤訊息</h3>
 
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/ssh/sshd_config line <span class="number">56</span>: Bad yes/no argument: Yes</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs powershell">/etc/ssh/sshd_config line <span class="hljs-number">56</span>: Bad yes/no argument: Yes<br></code></pre></td></tr></table></figure>
 
 <p>表示<strong>sshd_config</strong>這個檔案的設定有錯，yes/no的參數全部要 <strong>小寫</strong><br>當初修改設定時沒注意這點，很習慣的把Yes首字母大寫…</p>
 <hr>
 <h3>2.公鑰跟私鑰有沒有產生</h3>
 
 <p>啟動ssh的時候出現訊息：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Could not load host key: /etc/ssh/ssh_host_rsa_key</span><br><span class="line">Could not load host key: /etc/ssh/ssh_host_ecdsa_key</span><br><span class="line">Could not load host key: /etc/ssh/ssh_host_ed25519_key</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">Could not load host key: /etc/ssh/ssh_host_rsa_key<br>Could not load host key: /etc/ssh/ssh_host_ecdsa_key<br>Could not load host key: /etc/ssh/ssh_host_ed25519_key<br></code></pre></td></tr></table></figure>
 
 <p>表示金鑰有問題，檢查一下</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ll /etc/ssh</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">ll /etc/ssh<br></code></pre></td></tr></table></figure>
 
 <p>確認下面幾個檔案有沒有存在</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ssh_host_ecdsa_key</span><br><span class="line">ssh_host_ecdsa_key.pub</span><br><span class="line">ssh_host_ed25519_key</span><br><span class="line">ssh_host_ed25519_key.pub</span><br><span class="line">ssh_host_rsa_key</span><br><span class="line">ssh_host_rsa_key.pub</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">ssh_host_ecdsa_key<br>ssh_host_ecdsa_key.pub<br>ssh_host_ed25519_key<br>ssh_host_ed25519_key.pub<br>ssh_host_rsa_key<br>ssh_host_rsa_key.pub<br></code></pre></td></tr></table></figure>
 
 <p>檔案不存在的話用下列指令產生</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key</span><br><span class="line">ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key</span><br><span class="line">ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key<br>ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key<br>ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key<br></code></pre></td></tr></table></figure>
 <p>之後應該就可以正常連線了。</p>
 <hr>
 <p>用錯誤訊息去google到的答案並不一定有效，以下僅列出client端連線時遇到的錯誤訊息做為參考</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Connection closed by 127.0.0.1 port 22</span><br><span class="line">ssh: connect to host localhost port 22: Connection refused</span><br><span class="line">kex_exchange_identification: read: Connection reset by peer</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://eec22.github.io/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/" data-id="cku20p3df0007mwjx1kpr4pag" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WSL/" rel="tag">WSL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shell/" rel="tag">shell</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssh/" rel="tag">ssh</a></li></ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">Connection closed by 127.0.0.1 port 22<br>ssh: connect to host localhost port 22: Connection refused<br>kex_exchange_identification: read: Connection reset by peer<br></code></pre></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/infrastructure/">infrastructure</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/linux/">linux</a>
+                    
+                      <a class="hover-with-bg" href="/tags/ssh/">ssh</a>
+                    
+                      <a class="hover-with-bg" href="/tags/shell/">shell</a>
+                    
+                      <a class="hover-with-bg" href="/tags/WSL/">WSL</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/01/13/AD%E7%AE%A1%E7%90%86/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">AD管理:密碼原則的例外性</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/09/14/initialpage/">
+                        <span class="hidden-mobile">萬事先起頭</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-    </footer>
-  </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2021/01/13/AD%E7%AE%A1%E7%90%86/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          AD管理:密碼原則的例外性
-        
+            
+          </article>
+        </div>
       </div>
-    </a>
-  
-  
-    <a href="/2020/09/14/initialpage/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">萬事先起頭</div>
-    </a>
-  
-</nav>
-
-  
-</article>
-
-</section>
-        
-          <aside id="sidebar">
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/InformationManagement/">InformationManagement</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Initial/">Initial</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/infrastructure/">infrastructure</a></li></ul>
     </div>
-  </div>
-
-
-  
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
-    <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveDirectory/" rel="tag">ActiveDirectory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WSL/" rel="tag">WSL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/" rel="tag">code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exchange/" rel="tag">exchange</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mail/" rel="tag">mail</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mcsa/" rel="tag">mcsa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/outlook/" rel="tag">outlook</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/page/" rel="tag">page</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/password/" rel="tag">password</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rule/" rel="tag">rule</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/" rel="tag">ssh</a></li></ul>
-    </div>
-  </div>
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目錄</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
 
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/AD/" style="font-size: 10px;">AD</a> <a href="/tags/ActiveDirectory/" style="font-size: 10px;">ActiveDirectory</a> <a href="/tags/WSL/" style="font-size: 10px;">WSL</a> <a href="/tags/code/" style="font-size: 10px;">code</a> <a href="/tags/exchange/" style="font-size: 10px;">exchange</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mail/" style="font-size: 10px;">mail</a> <a href="/tags/mcsa/" style="font-size: 10px;">mcsa</a> <a href="/tags/outlook/" style="font-size: 10px;">outlook</a> <a href="/tags/page/" style="font-size: 10px;">page</a> <a href="/tags/password/" style="font-size: 10px;">password</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/rule/" style="font-size: 10px;">rule</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a>
-    </div>
-  </div>
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">September 2020</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2021/09/15/%E6%9F%90%E4%BA%9B%E8%A6%8F%E5%89%87%E5%B7%B2%E5%81%9C%E7%94%A8%EF%BC%8C%E7%95%B6%E6%82%A8%E5%98%97%E8%A9%A6%E5%9C%A8-Outlook-%E4%B8%AD%E5%BB%BA%E7%AB%8B%E6%88%96%E5%95%9F%E7%94%A8%E8%A6%8F%E5%89%87%E6%99%82%EF%BC%8C%E6%9C%83%E6%94%B6%E5%88%B0%E9%8C%AF%E8%AA%A4%E8%A8%8A%E6%81%AF/">某些規則已停用，當您嘗試在 Outlook 中建立或啟用規則時，會收到錯誤訊息</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/13/AD%E7%AE%A1%E7%90%86/">AD管理:密碼原則的例外性</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/11/Linux%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%9801-%E5%95%9F%E7%94%A8SSH/">Linux實作筆記01:WSL啟用SSH終端機連線</a>
-          </li>
-        
-          <li>
-            <a href="/2020/09/14/initialpage/">萬事先起頭</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
       </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2021 Kyle<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜尋</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">關鍵字</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
     </div>
   </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
 </footer>
-    </div>
-    <nav id="mobile-nav">
+
+
+  <!-- SCRIPTS -->
   
-    <a href="/" class="mobile-nav-link">Home</a>
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
   
-    <a href="/archives" class="mobile-nav-link">Archives</a>
+    <script  src="/js/img-lazyload.js" ></script>
   
-</nav>
-    
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
 
   
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
 
   
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
 
 
 
 
-<script src="/js/script.js"></script>
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
 
 
 
 
-  </div>
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
 </body>
 </html>
