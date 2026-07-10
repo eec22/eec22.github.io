@@ -15,7 +15,7 @@ const jsonLd = type === 'article' ? {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width" />
   <meta name="description" content={description} />
-  <meta name="theme-color" content="#0d2b22" />
+  <meta name="theme-color" content="#111318" />
   <link rel="canonical" href={canonical} />
   <link rel="icon" href="/img/favicon.png" />
   <link rel="alternate" type="application/rss+xml" title="Kyle Chan Research Notes" href="/rss.xml" />
@@ -28,7 +28,7 @@ const jsonLd = type === 'article' ? {
 </head>
 <body>
   <a class="skip" href="#content">跳至主要內容</a>
-  <header class="site"><div class="nav"><a class="brand" href="/">KYLE<span>/LAB</span></a><nav aria-label="主要導覽"><ul><li><a href="/categories/Generative-AI/">生成式 AI</a></li><li><a href="/categories/Investment/">投資研究</a></li><li><a href="/archives/">所有筆記</a></li><li><a href="/about/">關於</a></li></ul></nav></div></header>
+  <header class="site"><div class="nav"><a class="brand" href="/">KYLE<span>/LAB</span></a><nav aria-label="主要導覽"><ul><li><a href="/categories/Generative-AI/">生成式 AI</a></li><li><a href="/categories/Investment/">投資研究</a></li><li><a href="/archives/">文章彙整</a></li><li><a href="/about/">關於</a></li></ul></nav></div></header>
   <main id="content"><slot /></main>
   <footer class="footer"><div class="container"><span>© {new Date().getFullYear()} Kyle Chan</span><span>Build evidence, not certainty. · <a href="/rss.xml">RSS</a></span></div></footer>
 </body>

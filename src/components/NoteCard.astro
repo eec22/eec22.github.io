@@ -3,7 +3,7 @@ const { note } = Astro.props as { note: any };
 const { title, description, published, tags, cover, legacyPath } = note.data;
 const href = legacyPath ?? `/notes/${note.id}/`;
 ---
-<a class="card" href={href}>
+<a class:list={["card", { "no-cover": !cover }]} href={href}>
   {cover && <img src={cover} alt="" loading="lazy" />}
   <div class="card-body"><div class="meta">{published.toLocaleDateString('zh-TW')}</div><h3>{title}</h3><p>{description}</p><div>{tags.slice(0,3).map((tag: string) => <span class="tag">{tag}</span>)}</div></div>
 </a>
