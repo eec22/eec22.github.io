@@ -1,0 +1,12 @@
+---
+import BaseLayout from './BaseLayout.astro';
+const { note, headings = [] } = Astro.props as { note: any, headings: Array<{depth:number,slug:string,text:string}> };
+const d = note.data;
+---
+<BaseLayout title={`${d.title}｜Kyle Chan Research Notes`} description={d.description} image={d.cover} type="article" published={d.published.toISOString()} updated={d.updated.toISOString()}>
+  <div class="container article-shell"><article><header class="article-header"><div class="eyebrow">{d.category} / {d.published.toLocaleDateString('zh-TW')}</div><h1>{d.title}</h1><p class="lede" style="color:var(--muted)">{d.description}</p><div>{d.tags.map((tag: string) => <a class="tag" href={`/tags/${tag}/`}>#{tag}</a>)}</div></header>
+  {d.aiAssisted && <aside class="notice"><strong>AI 協作揭露</strong><br/>本文使用生成式 AI 協助整理，觀點與最終查核由作者負責。</aside>}
+  {d.investment && <aside class="notice"><strong>研究聲明</strong><br/>本文僅供研究與學習，不構成投資建議。投資人應自行判斷並承擔風險。</aside>}
+  <div class="prose"><slot /></div></article>
+  <aside class="toc" aria-label="本文目錄"><div class="eyebrow">On this page</div><ul>{headings.filter((h) => h.depth <= 3).map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ul></aside></div>
+</BaseLayout>

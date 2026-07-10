@@ -1,0 +1,24 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NoteLayout from '../layouts/NoteLayout.astro';
+import NoteCard from '../components/NoteCard.astro';
+import routes from '../data/legacy-routes.json';
+export async function getStaticPaths(){
+  const notes=await getCollection('notes',({data})=>!data.draft); const paths=[];
+  for(const note of notes.filter(n=>n.data.legacyPath)) paths.push({params:{legacy:note.data.legacyPath!.slice(1,-1)},props:{kind:'note',note}});
+  for(const route of routes.filter(r=>!r.endsWith('.html')&&!notes.some(n=>n.data.legacyPath===r))) paths.push({params:{legacy:route.slice(1).replace(/\/$/,'')},props:{kind:'listing',route}});
+  return paths;
+}
+const {kind,note,route}=Astro.props as {kind:'note'|'listing',note?:any,route?:string};
+const rendered = kind==='note' ? await render(note!) : undefined;
+const Content = rendered?.Content;
+const notes=(await getCollection('notes',({data})=>!data.draft)).sort((a,b)=>b.data.published.valueOf()-a.data.published.valueOf());
+const bits=(route??'').split('/').filter(Boolean); const root=bits[0]; const value=decodeURIComponent(bits.at(-1)??'');
+let filtered=notes; let title='舊筆記';
+if(root==='categories'&&bits.length>1){filtered=notes.filter(n=>n.data.category.toLowerCase()===value.toLowerCase());title=`分類：${value}`}
+else if(root==='tags'&&bits.length>1){filtered=notes.filter(n=>n.data.tags.some(t=>t.toLowerCase()===value.toLowerCase()));title=`標籤：${value}`}
+else if(root==='archives'&&bits.length>1){filtered=notes.filter(n=>String(n.data.published.getFullYear())===bits[1]&&(!bits[2]||String(n.data.published.getMonth()+1).padStart(2,'0')===bits[2]));title=`封存：${bits.slice(1).join(' / ')}`}
+else if(root==='archives') title='所有筆記'; else if(root==='categories') title='所有分類'; else if(root==='tags') title='所有標籤';
+---
+{kind==='note' ? <NoteLayout note={note} headings={rendered!.headings}>{Content && <Content />}</NoteLayout> : root==='about' ? <BaseLayout title="關於 Kyle｜Kyle Chan Research Notes" description="Kyle Chan 的工程、生成式 AI 與投資研究背景。"><div class="container article-shell"><article class="prose"><div class="eyebrow">About</div><h1>在工程與研究之間</h1><p>我是 Kyle，一位持續把工程方法帶進生成式 AI 與投資研究的實作者。</p><p>這裡不是答案倉庫，而是研究過程的公開筆記：問題如何定義、證據從哪裡來、假設如何被驗證，以及結論在哪些條件下會失效。</p><p>舊站的系統管理與程式筆記仍完整保留，因為可追溯的學習歷程本身也是研究資產。</p></article></div></BaseLayout> : <BaseLayout title={`${title}｜Kyle Chan Research Notes`} description={`${title}：生成式 AI、投資研究與工程實作文章彙整。`}><section class="section container"><div class="eyebrow">Index</div><h1 style="font-size:clamp(2.5rem,7vw,5rem)">{title}</h1>{filtered.length?<div class="cards">{filtered.map(n=><NoteCard note={n}/>)}</div>:<div class="empty"><p>這個舊路徑已保留，新內容將在此繼續累積。</p><a href="/archives/">瀏覽所有筆記</a></div>}</section></BaseLayout>}

@@ -1,0 +1,23 @@
+{
+  "name": "kylechan-research-notes",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "verify": "node scripts/verify.mjs",
+    "screenshots": "node scripts/screenshots.mjs",
+    "harness": "npm run build && npm run verify && npm run screenshots"
+  },
+  "dependencies": {
+    "@astrojs/rss": "4.0.19",
+    "@astrojs/sitemap": "3.7.3",
+    "astro": "7.0.7"
+  },
+  "devDependencies": {
+    "@astrojs/check": "latest",
+    "playwright": "1.61.1",
+    "typescript": "latest"
+  }
+}

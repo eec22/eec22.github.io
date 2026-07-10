@@ -1,0 +1,35 @@
+---
+import '../styles/global.css';
+const { title, description, image = '/img/default.png', type = 'website', published, updated } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const socialImage = new URL(image, Astro.site);
+const jsonLd = type === 'article' ? {
+  '@context':'https://schema.org','@type':'BlogPosting',headline:title,description,
+  datePublished:published,dateModified:updated,mainEntityOfPage:canonical.href,
+  image:socialImage.href,author:{'@type':'Person',name:'Kyle Chan'}
+} : {'@context':'https://schema.org','@type':'WebSite',name:'Kyle Chan Research Notes',url:canonical.href,description};
+---
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <meta name="description" content={description} />
+  <meta name="theme-color" content="#0d2b22" />
+  <link rel="canonical" href={canonical} />
+  <link rel="icon" href="/img/favicon.png" />
+  <link rel="alternate" type="application/rss+xml" title="Kyle Chan Research Notes" href="/rss.xml" />
+  <meta property="og:type" content={type} /><meta property="og:title" content={title} />
+  <meta property="og:description" content={description} /><meta property="og:url" content={canonical} />
+  <meta property="og:image" content={socialImage} /><meta property="og:locale" content="zh_TW" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <title>{title}</title>
+</head>
+<body>
+  <a class="skip" href="#content">跳至主要內容</a>
+  <header class="site"><div class="nav"><a class="brand" href="/">KYLE<span>/LAB</span></a><nav aria-label="主要導覽"><ul><li><a href="/categories/Generative-AI/">生成式 AI</a></li><li><a href="/categories/Investment/">投資研究</a></li><li><a href="/archives/">所有筆記</a></li><li><a href="/about/">關於</a></li></ul></nav></div></header>
+  <main id="content"><slot /></main>
+  <footer class="footer"><div class="container"><span>© {new Date().getFullYear()} Kyle Chan</span><span>Build evidence, not certainty. · <a href="/rss.xml">RSS</a></span></div></footer>
+</body>
+</html>

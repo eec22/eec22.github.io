@@ -1,0 +1,4 @@
+﻿{
+  "extends": "astro/tsconfigs/strict",
+  "exclude": ["dist", "node_modules", "css", "js", "lib", "2020", "2021", "archives", "categories", "tags", "PageTest", "123", "about", "links"]
+}

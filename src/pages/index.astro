@@ -1,0 +1,11 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NoteCard from '../components/NoteCard.astro';
+const notes = (await getCollection('notes', ({data}) => !data.draft)).sort((a,b) => b.data.published.valueOf()-a.data.published.valueOf());
+---
+<BaseLayout title="Kyle Chan｜生成式 AI × 投資研究筆記" description="以可重現的方法，記錄生成式 AI 實作、投資研究與工程決策。">
+  <section class="hero"><div class="container hero-grid"><div><div class="eyebrow">Generative AI × Investment Research</div><h1>把雜訊，<br/>煉成研究。</h1><p class="lede">生成式 AI 實作、投資研究與工程筆記。記錄假設、資料、方法，以及那些值得被推翻的結論。</p></div><div class="terminal" aria-label="研究流程"><p><span class="prompt">$</span> define_question</p><p><span class="prompt">$</span> gather_evidence</p><p><span class="prompt">$</span> test_assumptions</p><p><span class="prompt">$</span> publish_notes <span aria-hidden="true">█</span></p></div></div></section>
+  <section class="section container"><div class="section-head"><div><div class="eyebrow">Research lanes</div><h2>兩條主線，一套方法</h2></div></div><div class="topics"><a class="topic" href="/categories/Generative-AI/"><div class="eyebrow">01 / BUILD</div><strong>生成式 AI</strong><p>模型、Agent、評估與可重現的自動化流程。</p></a><a class="topic" href="/categories/Investment/"><div class="eyebrow">02 / RESEARCH</div><strong>投資研究</strong><p>公司、產業、籌碼與風險假設的研究紀錄。</p></a></div></section>
+  <section class="section container"><div class="section-head"><div><div class="eyebrow">Latest evidence</div><h2>最新筆記</h2></div><a href="/archives/">查看全部 →</a></div><div class="cards">{notes.slice(0,6).map((note) => <NoteCard note={note} />)}</div></section>
+</BaseLayout>
